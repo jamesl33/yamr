@@ -85,7 +85,7 @@ class TVShow():
         if not valid_tvdb_shows:
             return
 
-        print('TVDB search results for "{0}"'.format(title))
+        print('\nTVDB search results for "{0}"'.format(title))
 
         for index, show in enumerate(valid_tvdb_shows[:5]):
             print('{0}: {1}'.format(index + 1, show['seriesName']))

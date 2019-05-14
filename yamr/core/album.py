@@ -89,7 +89,7 @@ class Album():
         if not musicbrainz_albums:
             return
 
-        print('MusicBrainz search results for "{0}"'.format(self._title))
+        print('\nMusicBrainz search results for "{0}"'.format(self._title))
 
         for index, album in enumerate(musicbrainz_albums[:5]):
             artist_name = album['artist-credit'][0]['artist']['name']

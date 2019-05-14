@@ -89,7 +89,7 @@ class Movie(media_abc.Media):
         if not valid_imdb_movies:
             return
 
-        print('IMDB search results for "{0}"'.format(title))
+        print('\nIMDB search results for "{0}"'.format(title))
 
         for index, mo in enumerate(valid_imdb_movies[:5]):
             try:
