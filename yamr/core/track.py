@@ -40,7 +40,12 @@ class Track(Media):
         artist_name = kwargs['album']['artist-credit'][0]['artist']['name']
         album_name = kwargs['album']['title']
         track_num = str(self._info['episode']).zfill(2)
-        track_name = kwargs['track_list'][self._info['episode'] - 1]['recording']['title']
+
+        try:
+            track_name = kwargs['track_list'][self._info['episode'] - 1]['recording']['title']
+        except IndexError:
+            print('"{0}" track {1} not found (no changes made)'.format(album_name, track_num))
+            return
 
         new_filename = '{0} - {1} - {2} - {3}{4}'.format(artist_name, album_name, track_num,
                                                          self.clean_string(track_name),
