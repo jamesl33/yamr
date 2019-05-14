@@ -34,10 +34,6 @@ def prompt_choice(choices: List[T], print_choice: Callable[[int, T], T]) -> T:
     if not choices:
         return
 
-    # There was only one search result, automatically choose it
-    if len(choices) == 1:
-        return choices[0]
-
     current_pos = 0
 
     while True:
@@ -45,6 +41,11 @@ def prompt_choice(choices: List[T], print_choice: Callable[[int, T], T]) -> T:
 
         for index, choice in enumerate(current_choices):
             print_choice((index + current_pos) + 1, choice)
+
+        # There was only one search result, automatically choose it
+        if len(choices) == 1:
+            print('Automatically choosing only result: 1')
+            return current_choices[0]
 
         try:
             user_input = input('\033[KEnter choice: ')
