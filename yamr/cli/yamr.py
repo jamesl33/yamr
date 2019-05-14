@@ -111,6 +111,8 @@ class YAMR():
 
             albums[album_title].add(tr)
 
+        print('Discovered {0} Albums / {1} Movies / {2} TV Shows'.format(len(albums), len(movies), len(tv_shows)))
+
         return albums, movies, tv_shows
 
     @classmethod

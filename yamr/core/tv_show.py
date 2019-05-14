@@ -96,6 +96,9 @@ class TVShow():
 
         return tvdb_api.Tvdb()[valid_tvdb_shows[user_input.prompt_input()]['id']]
 
+    def __len__(self) -> int:
+        return len(self._episodes)
+
     def __repr__(self):
         title = self._title
         episode_count = len(self._episodes)

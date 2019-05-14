@@ -115,6 +115,9 @@ class Album():
         """See super class."""
         return self._info['title'], self._info['episode_title'], self._info['episode']
 
+    def __len__(self) -> int:
+        return len(self._tracks)
+
     def __repr__(self) -> str:
         album_title = self._title
         track_count = len(self._tracks)
