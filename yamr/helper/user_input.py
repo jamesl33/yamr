@@ -18,27 +18,57 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+from typing import Callable, List, TypeVar
 
-def prompt_input() -> int:
-    """Prompt the user for an integer input.
+
+T = TypeVar('T')  # Generic type
+
+
+def prompt_choice(choices: List[T], print_choice: Callable[[int, T], T]) -> T:
+    """Prompt the user to choose an item from a list.
 
     Returns:
-        An integer representing the users choice.
+        The users choice from the 'choices' list.
     """
+    # There weren't any search results
+    if not choices:
+        return
+
+    # There was only one search result, automatically choose it
+    if len(choices) == 1:
+        return choices[0]
+
+    current_pos = 0
+
     while True:
+        current_choices = choices[current_pos:current_pos + 5]
+
+        for index, choice in enumerate(current_choices):
+            print_choice((index + current_pos) + 1, choice)
+
         try:
-            user_input = input('Enter choice: ')
+            user_input = input('\033[KEnter choice: ')
         except KeyboardInterrupt:
-            print('\nAborted!')
             exit(0)
 
-        if user_input == '':
-            print('\033[FEnter choice: 1')
-            return 0
-
+        # Attempt to see if the user input a valid choice
         try:
-            user_input = int(user_input)
-            print('\033[FEnter choice: {0}'.format(user_input))
-            return user_input - 1
+            return choices[int(user_input) - 1]
         except ValueError:
-            pass  # Failed to parse the users input, ask again
+            pass
+
+        # Check for other valid input, which is *not* a choice
+        if user_input == '' and choices[0] == current_choices[0]:
+            print('\033[F\033[KEnter choice: 1')
+            return current_choices[0]
+        elif user_input == 'n' and current_pos <= len(choices) - (5 + 1):
+            current_pos += 5
+        elif user_input == 'p' and current_pos >= 5:
+            current_pos -= 5
+        elif user_input == 's':
+            return None
+        elif user_input == 'q':
+            exit(0)
+
+        # Erase the old output choices
+        print('\033[F' * (len(current_choices) + 1), end='')

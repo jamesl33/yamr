@@ -22,6 +22,7 @@ import sys
 
 from typing import List, Tuple, Dict
 
+import colorama
 import musicbrainzngs
 
 from . import track
@@ -61,7 +62,7 @@ class Album():
 
         # There weren't any search results
         if album is None:
-            print('Album "{0}" not found (no changes made)'.format(self._info['title']))
+            print('Album "{0}" skipped or not found (no changes made)'.format(self._title))
             return
 
         release = musicbrainzngs.get_release_by_id(album['id'], includes='recordings')
@@ -89,9 +90,11 @@ class Album():
         if not musicbrainz_albums:
             return
 
-        print('MusicBrainz search results for "{0}"'.format(self._title))
+        print('\nMusicBrainz search results for "{0}"'.format(colorama.Fore.LIGHTBLUE_EX + self._title + colorama.Fore.RESET))
 
-        for index, album in enumerate(musicbrainz_albums[:5]):
+        def _print_album(index: int, album: dict) -> None:
+            number = colorama.Fore.LIGHTBLUE_EX + str(index) + '.' + colorama.Fore.RESET
+
             artist_name = album['artist-credit'][0]['artist']['name']
             album_title = album['title']
 
@@ -101,19 +104,18 @@ class Album():
                 album_release = None
 
             if album_release is None:
-                print('{0}: {1} - {2}'.format(index + 1, artist_name, album_title))
+                print('{0} {1} - {2}'.format(number, artist_name, album_title))
             else:
-                print('{0}: {1} - {2} ({3})'.format(index + 1, artist_name, album_title, album_release))
+                print('{0} {1} - {2} ({3})'.format(number, artist_name, album_title, album_release))
 
-        if len(musicbrainz_albums) == 1:
-            print('Automatically choosing only result')
-            return musicbrainz_albums[0]
-
-        return musicbrainz_albums[user_input.prompt_input()]
+        return user_input.prompt_choice(musicbrainz_albums, _print_album)
 
     def sortable_data(self) -> Tuple[str, int, List[int]]:
         """See super class."""
         return self._info['title'], self._info['episode_title'], self._info['episode']
+
+    def __len__(self) -> int:
+        return len(self._tracks)
 
     def __repr__(self) -> str:
         album_title = self._title

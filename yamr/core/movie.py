@@ -18,9 +18,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os.path
 import re
 
+import colorama
 import imdb
 
 from . import media_abc
@@ -43,7 +43,7 @@ class Movie(media_abc.Media):
 
         # There weren't any search results
         if imdb_movie is None:
-            print('Movie "{0}" not found (no changes made)'.format(self._info['title']))
+            print('Movie "{0}" skipped or not found (no changes made)'.format(self._info['title']))
             return
 
         movie_title = imdb_movie['title']
@@ -58,11 +58,7 @@ class Movie(media_abc.Media):
         else:
             new_filename = '{0} ({1}){2}'.format(movie_title, movie_year, self.file_extension)
 
-        if self.filename != new_filename:
-            print('"{0}" -> "{1}"'.format(os.path.basename(self._path), new_filename))
-
-            if not dry_run:
-                self.filename = new_filename
+        self._rename(new_filename, dry_run)
 
     def sortable_data(self) -> tuple:
         """See super class."""
@@ -89,19 +85,17 @@ class Movie(media_abc.Media):
         if not valid_imdb_movies:
             return
 
-        print('IMDB search results for "{0}"'.format(title))
+        print('\nIMDB search results for "{0}"'.format(colorama.Fore.LIGHTBLUE_EX + title + colorama.Fore.RESET))
 
-        for index, mo in enumerate(valid_imdb_movies[:5]):
+        def _print_movie(index: int, movie: imdb.Movie.Movie) -> None:
+            number = colorama.Fore.LIGHTBLUE_EX + str(index) + '.' + colorama.Fore.RESET
+
             try:
-                print('{0}: {1} ({2})'.format(index + 1, mo['title'], mo['year']))
+                print('{0} {1} ({2})'.format(number, movie['title'], movie['year']))
             except KeyError:
-                print('{0}: {1}'.format(index + 1, mo['title']))
+                print('{0} {1}'.format(number, movie['title']))
 
-        if len(valid_imdb_movies) == 1:
-            print('Automatically choosing only result')
-            return valid_imdb_movies[0]
-
-        return valid_imdb_movies[user_input.prompt_input()]
+        return user_input.prompt_choice(valid_imdb_movies, _print_movie)
 
     def __repr__(self):
         title = self._info['title']
