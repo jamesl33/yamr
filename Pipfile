@@ -8,6 +8,7 @@ flake8 = ">=3.7.7"
 pylint = ">=2.3.1"
 
 [packages]
+colorama = ">=0.4.1"
 guessit = ">=3.0.3"
 imdbpy = ">=6.6"
 musicbrainzngs = ">=0.6"

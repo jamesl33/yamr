@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import colorama
+
 
 def prompt_input() -> int:
     """Prompt the user for an integer input.
@@ -33,12 +35,12 @@ def prompt_input() -> int:
             exit(0)
 
         if user_input == '':
-            print('\033[FEnter choice: 1')
+            print('\033[FEnter choice: {0}'.format(colorama.Fore.LIGHTBLUE_EX + '1' + colorama.Fore.RESET))
             return 0
 
         try:
             user_input = int(user_input)
-            print('\033[FEnter choice: {0}'.format(user_input))
+            print('\033[FEnter choice: {0}'.format(colorama.Fore.LIGHTBLUE_EX + str(user_input) + colorama.Fore.RESET))
             return user_input - 1
         except ValueError:
             pass  # Failed to parse the users input, ask again

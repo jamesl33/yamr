@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os.path
 
 from .media_abc import Media
 
@@ -51,11 +50,7 @@ class Track(Media):
                                                          self.clean_string(track_name),
                                                          self.file_extension)
 
-        if self.filename != new_filename:
-            print('"{0}" -> "{1}"'.format(os.path.basename(self._path), new_filename))
-
-            if not dry_run:
-                self.filename = new_filename
+        self._rename(new_filename, dry_run)
 
     def sortable_data(self):
         """See super class."""
