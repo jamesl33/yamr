@@ -45,7 +45,7 @@ class Episode(media_abc.Media):
         series_name = tvdb_show['seriesName']
 
         try:
-            season_num = sorted(tvdb_show)[self._info['season']]
+            season_num = sorted(tvdb_show)[self._info['season'] - int(sorted(tvdb_show)[0] != 0)]
             tvdb_season = tvdb_show[season_num]
             tvdb_episode = tvdb_season[self._info['episode'][0]]
         except (IndexError, tvdb_api.tvdb_episodenotfound):
