@@ -57,7 +57,7 @@ class TVShow():
 
         # There weren't any search results
         if tvdb_show is None:
-            print('TV show "{0}" not found (no changes made)'.format(self._info['title']))
+            print('TV show "{0}" not found (no changes made)'.format(self._title))
             return
 
         # rename episodes in season/episode sorted order to make visual checks simpler

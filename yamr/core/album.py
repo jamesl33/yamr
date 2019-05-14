@@ -61,7 +61,7 @@ class Album():
 
         # There weren't any search results
         if album is None:
-            print('Album "{0}" not found (no changes made)'.format(self._info['title']))
+            print('Album "{0}" not found (no changes made)'.format(self._title))
             return
 
         release = musicbrainzngs.get_release_by_id(album['id'], includes='recordings')
