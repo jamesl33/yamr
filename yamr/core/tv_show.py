@@ -91,10 +91,10 @@ class TVShow():
         def _print_show(index: int, show: dict) -> None:
             number = colorama.Fore.LIGHTBLUE_EX + str(index) + '.' + colorama.Fore.RESET
 
-            try:
-                print('{0} {1} ({2})'.format(number, show['seriesName'], show['firstAired']))
-            except KeyError:
+            if show['firstAired'] == '':
                 print('{0} {1}'.format(number, show['seriesName']))
+            else:
+                print('{0} {1} ({2})'.format(number, show['seriesName'], show['firstAired']))
 
         user_choice = user_input.prompt_choice(valid_tvdb_shows, _print_show)
 
