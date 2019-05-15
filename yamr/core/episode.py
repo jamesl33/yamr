@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os.path
 import re
 
 import tvdb_api
@@ -45,35 +44,31 @@ class Episode(media_abc.Media):
         tvdb_show = kwargs['tvdb_show']
         series_name = tvdb_show['seriesName']
 
+        try:
+            season_num = sorted(tvdb_show)[self._info['season'] - int(sorted(tvdb_show)[0] != 0)]
+            tvdb_season = tvdb_show[season_num]
+            tvdb_episode = tvdb_season[self._info['episode'][0]]
+        except (IndexError, tvdb_api.tvdb_episodenotfound):
+            se_num = str(self._info['season']).zfill(2)
+            ep_num = str(self._info['episode'][0]).zfill(2)
+            print('S{0}E{1} not found (no changes made)'.format(se_num, ep_num))
+            return
+
         episode_info = ''
 
         for index, ep in enumerate(self._info['episode']):
-            se_num = str(sorted(tvdb_show)[self._info['season']]).zfill(2)
+            se_num = str(season_num).zfill(2)
             ep_num = str(ep).zfill(2)
             episode_info += 'S{0}E{1}'.format(se_num, ep_num)
 
             if index + 1 != len(self._info['episode']):
                 episode_info += ' - '
 
-        tvdb_season = tvdb_show[sorted(tvdb_show)[self._info['season']]]
-
-        try:
-            tvdb_episode = tvdb_season[self._info['episode'][0]]
-        except tvdb_api.tvdb_episodenotfound:
-            se_num = str(self._info['season']).zfill(2)
-            ep_num = str(self._info['episode'][0]).zfill(2)
-            print('S{0}E{1} not found (no changes made)'.format(se_num, ep_num))
-            return
-
         episode_title = self.clean_string(tvdb_episode['episodeName'], len(self._info['episode']) != 1)
 
         new_filename = '{0} - {1} - {2}{3}'.format(series_name, episode_info, episode_title, self.file_extension)
 
-        if self.filename != new_filename:
-            print('"{0}" -> "{1}"'.format(os.path.basename(self._path), new_filename))
-
-            if not dry_run:
-                self.filename = new_filename
+        self._rename(new_filename, dry_run)
 
     def sortable_data(self) -> tuple:
         """See super class."""

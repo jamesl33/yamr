@@ -31,10 +31,11 @@ setuptools.setup(
         ],
     },
     install_requires=[
+        'colorama',
         'guessit',
         'imdbpy',
         'musicbrainzngs',
-        'tvdb-api'
+        'tvdb-api',
     ],
     license=yamr.__license__,
     name=yamr.__name__,

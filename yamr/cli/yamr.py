@@ -22,6 +22,7 @@ import os.path
 
 from typing import List, Tuple, Dict, TypeVar
 
+import colorama
 import guessit
 
 from ..core import album
@@ -99,17 +100,18 @@ class YAMR():
 
         # Separate the tracks into individual albums
         for tr in tracks:
-            if 'alternative_title' in tr._info:
-                album_title = tr._info['alternative_title'].lower()
-            elif 'episode_title' in tr._info:
-                album_title = tr._info['episode_title'].lower()
-            else:
-                album_title = tr._info['title'].lower()
+            album_title = tr._info['title'].lower()
 
             if album_title not in albums:
                 albums[album_title] = album.Album(album_title)
 
             albums[album_title].add(tr)
+
+        album_count = colorama.Fore.LIGHTGREEN_EX + str(len(albums)) + colorama.Fore.RESET
+        movie_count = colorama.Fore.LIGHTGREEN_EX + str(len(movies)) + colorama.Fore.RESET
+        tv_show_count = colorama.Fore.LIGHTGREEN_EX + str(len(tv_shows)) + colorama.Fore.RESET
+
+        print('Discovered {0} Albums / {1} Movies / {2} TV Shows'.format(album_count, movie_count, tv_show_count))
 
         return albums, movies, tv_shows
 
