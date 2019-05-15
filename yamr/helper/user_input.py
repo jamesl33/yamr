@@ -72,4 +72,4 @@ def prompt_choice(choices: List[T], print_choice: Callable[[int, T], T]) -> T:
             exit(0)
 
         # Erase the old output choices
-        print('\033[F' * (len(current_choices) + 1), end='')
+        print('\033[F\033[K' * (len(current_choices) + 1), end='')
