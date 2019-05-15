@@ -85,9 +85,20 @@ class Album():
         yamr = sys.modules[__name__.split('.')[0]]
         musicbrainzngs.set_useragent(yamr.__title__, yamr.__version__, yamr.__homepage__)
 
-        musicbrainz_albums = musicbrainzngs.search_releases(self._title)['release-list']
+        musicbrainz_albums = musicbrainzngs.search_releases(self._title, limit=100)['release-list']
 
-        if not musicbrainz_albums:
+        known_albums = []
+        valid_musicbrainz_albums = []
+
+        for al in musicbrainz_albums:
+            al_info = (al['title'].lower(), al['artist-credit-phrase'].lower())
+
+            if 'type' in al['release-group'] and al['release-group']['type'] == 'Album':
+                if al_info not in known_albums:
+                    valid_musicbrainz_albums.append(al)
+                    known_albums.append(al_info)
+
+        if not valid_musicbrainz_albums:
             return
 
         print('\nMusicBrainz search results for "{0}"'.format(colorama.Fore.LIGHTBLUE_EX + self._title + colorama.Fore.RESET))
@@ -108,7 +119,7 @@ class Album():
             else:
                 print('{0} {1} - {2} ({3})'.format(number, artist_name, album_title, album_release))
 
-        return user_input.prompt_choice(musicbrainz_albums, _print_album)
+        return user_input.prompt_choice(valid_musicbrainz_albums, _print_album)
 
     def sortable_data(self) -> Tuple[str, int, List[int]]:
         """See super class."""
