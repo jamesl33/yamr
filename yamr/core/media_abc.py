@@ -102,15 +102,20 @@ class Media(metaclass=abc.ABCMeta):
         """
         if self.filename == new_filename:
             original = colorama.Fore.LIGHTGREEN_EX + self.filename + colorama.Fore.RESET
+
             print('Filename "{0}" is already correct (no changes made)'.format(original))
+        elif os.path.exists(new_filename):
+            new_filename = colorama.Fore.LIGHTRED_EX + new_filename + colorama.Fore.RESET
+
+            print('Filename "{0}" already exists (no changes made)'.format(new_filename))
         else:
             original = colorama.Fore.LIGHTRED_EX + self.filename + colorama.Fore.RESET
             new = colorama.Fore.LIGHTGREEN_EX + os.path.basename(new_filename) + colorama.Fore.RESET
 
             print('"{0}" -> "{1}"'.format(original, new))
 
-        if not dry_run:
-            self.filename = new_filename
+            if not dry_run:
+                self.filename = new_filename
 
     @abc.abstractmethod
     def sortable_data(self) -> tuple:
