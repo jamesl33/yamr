@@ -100,7 +100,10 @@ class YAMR():
 
         # Separate the tracks into individual albums
         for tr in tracks:
-            album_title = tr._info['title'].lower()
+            try:
+                album_title = tr._info['alternative_title'].lower()
+            except KeyError:
+                album_title = tr._info['title'].lower()
 
             if album_title not in albums:
                 albums[album_title] = album.Album(album_title)
