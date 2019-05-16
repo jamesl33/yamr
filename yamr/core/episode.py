@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
 
+import colorama
 import tvdb_api
 
 from . import media_abc
@@ -56,13 +57,19 @@ class Episode(media_abc.Media):
         try:
             tvdb_season = tvdb_show[season_num]
         except tvdb_api.tvdb_seasonnotfound:
-            print('Season {0} not found (no changes made)'.format(str(season_num).zfill(2)))
+            se_num = str(season_num).zfill(2)
+            ep_num = str(self._info['episode'][0]).zfill(2)
+
+            print('"{0}S{1}E{2}{3}" not found (no changes made)'.format(colorama.Fore.LIGHTRED_EX, se_num, ep_num, colorama.Fore.RESET))
             return
 
         try:
             tvdb_episode = tvdb_season[self._info['episode'][0]]
         except tvdb_api.tvdb_episodenotfound:
-            print('Episode {0} not found (no changes made)'.format(self._info['episode'][0]))
+            se_num = str(season_num).zfill(2)
+            ep_num = str(self._info['episode'][0]).zfill(2)
+
+            print('"{0}S{1}E{2}{3}" not found (no changes made)'.format(colorama.Fore.LIGHTRED_EX, se_num, ep_num, colorama.Fore.RESET))
             return
 
         episode_info = ''
