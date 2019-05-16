@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import colorama
 import tvdb_api
 
 from . import episode
@@ -57,7 +58,7 @@ class TVShow():
 
         # There weren't any search results
         if tvdb_show is None:
-            print('TV show "{0}" not found (no changes made)'.format(self._info['title']))
+            print('TV show "{0}" skipped or not found (no changes made)'.format(self._title))
             return
 
         # rename episodes in season/episode sorted order to make visual checks simpler
@@ -85,16 +86,26 @@ class TVShow():
         if not valid_tvdb_shows:
             return
 
-        print('TVDB search results for "{0}"'.format(title))
+        print('\nTVDB search results for "{0}"'.format(colorama.Fore.LIGHTBLUE_EX + title + colorama.Fore.RESET))
 
-        for index, show in enumerate(valid_tvdb_shows[:5]):
-            print('{0}: {1}'.format(index + 1, show['seriesName']))
+        def _print_show(index: int, show: dict) -> None:
+            number = colorama.Fore.LIGHTBLUE_EX + str(index) + '.' + colorama.Fore.RESET
 
-        if len(valid_tvdb_shows) == 1:
-            print('Automatically choosing only result')
-            return tvdb_api.Tvdb()[valid_tvdb_shows[0]['id']]
+            if show['firstAired'] == '':
+                print('{0} {1}'.format(number, show['seriesName']))
+            else:
+                print('{0} {1} ({2})'.format(number, show['seriesName'], show['firstAired']))
 
-        return tvdb_api.Tvdb()[valid_tvdb_shows[user_input.prompt_input()]['id']]
+        user_choice = user_input.prompt_choice(valid_tvdb_shows, _print_show)
+
+        # The user chose to skip
+        if user_choice is None:
+            return
+
+        return tvdb_api.Tvdb()[user_choice['id']]
+
+    def __len__(self) -> int:
+        return len(self._episodes)
 
     def __repr__(self):
         title = self._title

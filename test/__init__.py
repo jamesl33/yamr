@@ -17,28 +17,3 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-
-import setuptools
-
-import yamr
-
-setuptools.setup(
-    author=yamr.__author__,
-    author_email=yamr.__author_email__,
-    entry_points={
-        'console_scripts': [
-            'yamr = yamr.cli.main:run_yamr'
-        ],
-    },
-    install_requires=[
-        'colorama',
-        'guessit',
-        'imdbpy',
-        'musicbrainzngs',
-        'tvdb-api',
-    ],
-    license=yamr.__license__,
-    name=yamr.__name__,
-    packages=setuptools.find_packages(),
-    version=yamr.__version__
-)
