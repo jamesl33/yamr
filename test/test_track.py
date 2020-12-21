@@ -49,5 +49,5 @@ def test_multiple_album_detection(tmp_path):
 
     files = [os.path.basename(f) for f in tmp_path.iterdir()]
 
-    assert 'Louis Armstrong - What a Wonderful World - 01 - What a Wonderful World.mp3' in files
+    assert 'Jérôme Noetinger - What a Wonderful World - 01 - Trees of Green.mp3' in files
     assert 'Rick Astley - Whenever You Need Somebody - 01 - Never Gonna Give You Up.mp3' in files

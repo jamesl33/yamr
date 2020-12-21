@@ -25,7 +25,7 @@ from unittest import mock
 from yamr.cli import yamr
 
 
-def test_rename_episode_standard(tmp_path):
+def test_rename_episode(tmp_path):
     (tmp_path / 'Game of Thrones S01E01.mp4').touch()
 
     YAMR = yamr.YAMR({'folder': tmp_path, 'dry_run': False}, {})
@@ -38,22 +38,9 @@ def test_rename_episode_standard(tmp_path):
     assert 'Game of Thrones - S01E01 - Winter Is Coming.mp4' in files
 
 
-def test_rename_episode_non_standard(tmp_path):
-    (tmp_path / 'MythBusters - S2003E01.mp4').touch()
-
-    YAMR = yamr.YAMR({'folder': tmp_path, 'dry_run': False}, {})
-
-    with mock.patch('builtins.input', side_effect='1'):
-        YAMR.rename_media_files()
-
-    files = [os.path.basename(f) for f in tmp_path.iterdir()]
-
-    assert 'MythBusters - S2003E01 - Jet Assisted Chevy.mp4' in files
-
-
 def test_multiple_show_detection(tmp_path):
     (tmp_path / 'Game of Thrones S01E01.mp4').touch()
-    (tmp_path / 'MythBusters - S2003E01.mp4').touch()
+    (tmp_path / 'MythBusters - S01E01.mp4').touch()
 
     YAMR = yamr.YAMR({'folder': tmp_path, 'dry_run': False}, {})
 
@@ -63,4 +50,4 @@ def test_multiple_show_detection(tmp_path):
     files = [os.path.basename(f) for f in tmp_path.iterdir()]
 
     assert 'Game of Thrones - S01E01 - Winter Is Coming.mp4' in files
-    assert 'MythBusters - S2003E01 - Jet Assisted Chevy.mp4' in files
+    assert 'MythBusters - S01E01 - Pilot 1: Jet-Assisted Chevy-Pop Rocks and Soda.mp4' in files

@@ -7,7 +7,6 @@ Dependencies
 - [guessit](https://github.com/guessit-io/guessit)
 - [imdbpy](https://github.com/alberanid/imdbpy)
 - [python-musicbrainzngs](https://github.com/alastair/python-musicbrainzngs)
-- [tvdb-api](https://github.com/alberanid/imdbpy)
 
 Installation
 ------------

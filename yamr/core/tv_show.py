@@ -18,8 +18,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import re
+
 import colorama
-import tvdb_api
+import imdb
 
 from . import episode
 from ..helper import user_input
@@ -54,19 +56,21 @@ class TVShow():
         Arguments:
             dry_run: Whether or not make any changes.
         """
-        tvdb_show = self._determine_show(self._title)
+        imdb_show = self._determine_show(self._title)
 
         # There weren't any search results
-        if tvdb_show is None:
+        if imdb_show is None:
             print('TV show "{0}" skipped or not found (no changes made)'.format(self._title))
             return
 
+        imdb.IMDb().update(imdb_show, 'episodes')
+
         # rename episodes in season/episode sorted order to make visual checks simpler
         for ep in sorted(self._episodes, key=lambda e: e.sortable_data()):
-            ep.rename(dry_run, tvdb_show=tvdb_show)
+            ep.rename(dry_run, imdb_show=imdb_show)
 
-    def _determine_show(self, title: str) -> tvdb_api.Show:
-        """Use the TVDB api and information extracted by Guessit to
+    def _determine_show(self, title: str) -> imdb.Movie.Movie:
+        """Use the IMDB api and information extracted by Guessit to
         determine which TV show we are renaming.
 
         Arguments:
@@ -75,34 +79,24 @@ class TVShow():
         Returns:
             The show we are renaming, as chosen by the user.
         """
-        try:
-            tvdb_shows = tvdb_api.Tvdb().search(title)
-        except tvdb_api.tvdb_shownotfound:
-            print('Error: TV show not found')
-            exit(1)
+        imdb_shows = imdb.IMDb().search_movie(title)
 
-        valid_tvdb_shows = [sh for sh in tvdb_shows if sh['seriesName'] != '** 403: Series Not Permitted **']
+        valid_imdb_shows = [mo for mo in imdb_shows if re.search('tv series', mo['kind'])]
 
-        if not valid_tvdb_shows:
+        if not valid_imdb_shows:
             return
 
-        print('\nTVDB search results for "{0}"'.format(colorama.Fore.LIGHTBLUE_EX + title + colorama.Fore.RESET))
+        print('\nIMDB search results for "{0}"'.format(colorama.Fore.LIGHTBLUE_EX + title + colorama.Fore.RESET))
 
         def _print_show(index: int, show: dict) -> None:
             number = colorama.Fore.LIGHTBLUE_EX + str(index) + '.' + colorama.Fore.RESET
 
-            if show['firstAired'] == '':
-                print('{0} {1}'.format(number, show['seriesName']))
+            if show['year'] == '':
+                print('{0} {1}'.format(number, show['title']))
             else:
-                print('{0} {1} ({2})'.format(number, show['seriesName'], show['firstAired']))
+                print('{0} {1} ({2})'.format(number, show['title'], show['year']))
 
-        user_choice = user_input.prompt_choice(valid_tvdb_shows, _print_show)
-
-        # The user chose to skip
-        if user_choice is None:
-            return
-
-        return tvdb_api.Tvdb()[user_choice['id']]
+        return user_input.prompt_choice(valid_imdb_shows, _print_show)
 
     def __len__(self) -> int:
         return len(self._episodes)

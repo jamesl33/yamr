@@ -35,7 +35,6 @@ setuptools.setup(
         'guessit',
         'imdbpy',
         'musicbrainzngs',
-        'tvdb-api',
     ],
     license=yamr.__license__,
     name=yamr.__name__,

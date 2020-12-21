@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import re
 
 import colorama
-import tvdb_api
+import imdb
 
 from . import media_abc
 
@@ -32,7 +32,7 @@ class Episode(media_abc.Media):
         """See super class."""
         super().__init__(path, info, overrides)
 
-        # Ensure we have the required information for TVDB.
+        # Ensure we have the required information for IMDB.
         for req in [r for r in ['title', 'season', 'episode'] if r not in self._info]:
             raise ValueError('Error: Filename lacks a {0}.'.format(req))
 
@@ -42,21 +42,15 @@ class Episode(media_abc.Media):
 
     def rename(self, dry_run: bool, **kwargs) -> None:
         """See super class."""
-        tvdb_show = kwargs['tvdb_show']
-        series_name = tvdb_show['seriesName']
+        imdb_show = kwargs['imdb_show']
+        series_name = imdb_show['title']
 
         # By default assume the extracted season number is correct
         season_num = self._info['season']
 
-        # Try to determine if the season number is non-standard e.g. 'Season 2003'
         try:
-            season_num = sorted(tvdb_show)[season_num] - int(sorted(tvdb_show)[0] != 0)
-        except IndexError:
-            pass
-
-        try:
-            tvdb_season = tvdb_show[season_num]
-        except tvdb_api.tvdb_seasonnotfound:
+            imdb_season = imdb_show['episodes'][season_num]
+        except KeyError:
             se_num = str(season_num).zfill(2)
             ep_num = str(self._info['episode'][0]).zfill(2)
 
@@ -64,8 +58,8 @@ class Episode(media_abc.Media):
             return
 
         try:
-            tvdb_episode = tvdb_season[self._info['episode'][0]]
-        except tvdb_api.tvdb_episodenotfound:
+            imdb_episode = imdb_season[self._info['episode'][0]]
+        except KeyError:
             se_num = str(season_num).zfill(2)
             ep_num = str(self._info['episode'][0]).zfill(2)
 
@@ -82,7 +76,7 @@ class Episode(media_abc.Media):
             if index + 1 != len(self._info['episode']):
                 episode_info += ' - '
 
-        episode_title = self.clean_string(tvdb_episode['episodeName'], len(self._info['episode']) != 1)
+        episode_title = self.clean_string(imdb_episode['title'], len(self._info['episode']) != 1)
 
         new_filename = '{0} - {1} - {2}{3}'.format(series_name, episode_info, episode_title, self.file_extension)
 
